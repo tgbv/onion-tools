@@ -1,4 +1,4 @@
-import { isValidV3OnionAddress } from "../index.js";
+import { isValidV3OnionDomain } from "../index.js";
 import assert from "assert";
 
 const valid = "facebookwkhpilnemxj7asaniu7vnjjbiltxjqhye3mhbshg7kx5tfyd.onion";
@@ -13,16 +13,16 @@ const invalidRegexVariants = [
   "facebookwkhpilnemxj7asaniu7vnjjbiltxjqhye3mhbshg7kx5tfy.onio",
 ];
 
-it('should pass on valid address', () => {
-  const result = isValidV3OnionAddress(valid);
+it('should pass on valid domain', () => {
+  const result = isValidV3OnionDomain(valid);
   assert.equal(result, true);
 });
 
-it('should pass on invalid address syntax', () => {
+it('should pass on invalid domain syntax', () => {
   let result = false;
 
   for (const variant of invalidRegexVariants) {
-    if (isValidV3OnionAddress(variant)) {
+    if (isValidV3OnionDomain(variant)) {
       result = true;
       break;
     }
@@ -31,7 +31,7 @@ it('should pass on invalid address syntax', () => {
   assert.equal(result, false);
 });
 
-it('should pass on invalid address checksum', () => {
-  const result = isValidV3OnionAddress(invalidChecksum);
+it('should pass on invalid domain checksum', () => {
+  const result = isValidV3OnionDomain(invalidChecksum);
   assert.equal(result, false);
 });
