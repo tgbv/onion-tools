@@ -1,0 +1,26 @@
+{
+  "name": "onion-tools",
+  "version": "0.0.1",
+  "description": "Tor onion address tools.",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "npx mocha ./src/test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/tgbv/onion-tools"
+  },
+  "keywords": [
+    "tor",
+    "onion"
+  ],
+  "author": "tgbv",
+  "license": "BSD-3-Clause",
+  "type": "module",
+  "dependencies": {
+    "base32-decode": "^1.0.0"
+  },
+  "devDependencies": {
+    "mocha": "^9.1.3"
+  }
+}
