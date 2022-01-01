@@ -1,7 +1,7 @@
-import { isValidV3OnionDomain } from "../index.js";
+import { isValidV3OnionDomain, isValidV3OnionDomainSyntax } from "../index.js";
 import assert from "assert";
 
-const valid = "facebookwkhpilnemxj7asaniu7vnjjbiltxjqhye3mhbshg7kx5tfyd.onion";
+const valid = "ciadotgov4sjwlzihbbgxnqg3xiyrg7so2r2o3lt5wz5ypk4sxyjstad.onion";
 const invalidChecksum = "zacebookwkhpilnemxj7asaniu7vnjjbiltxjqhye3mhbshg7kx5tfyd.onion";
 const invalidRegexVariants = [
   "facebookwkhpilnemxj7ahye3mhbshg7kx5tfyd.onion",
@@ -22,7 +22,7 @@ it('should pass on invalid domain syntax', () => {
   let result = false;
 
   for (const variant of invalidRegexVariants) {
-    if (isValidV3OnionDomain(variant)) {
+    if (isValidV3OnionDomainSyntax(variant)) {
       result = true;
       break;
     }
