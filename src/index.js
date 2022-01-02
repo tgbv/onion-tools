@@ -183,7 +183,7 @@ export function isValidV3OnionDomain(domain) {
  * Note that by default the private/public keys pair cannot be directly exported to files
  * for Tor hidden service hosting. To sanitize them for that feature see 'formatForService' parameter.
  * 
- * @param {?Buffer} seed Can contain anything. Will be fed into a sha256 digest.
+ * @param {?any} seed Can contain anything. Will be fed into a sha256 digest.
  * Should be long enough for security reasons. If it's null/undefined, a random seed will be used.
  * If it's specified, the whole generation process will be deterministic.
  * 
