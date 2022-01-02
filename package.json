@@ -18,7 +18,9 @@
   "license": "BSD-3-Clause",
   "type": "module",
   "dependencies": {
-    "base32-decode": "^1.0.0"
+    "base32-decode": "^1.0.0",
+    "base32-encode": "^2.0.0",
+    "noble-ed25519": "^1.2.6"
   },
   "devDependencies": {
     "chai": "^4.3.4",
