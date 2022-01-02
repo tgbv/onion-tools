@@ -1,7 +1,7 @@
 {
   "name": "onion-tools",
-  "version": "0.0.4",
-  "description": "Tor onion address tools.",
+  "version": "0.0.5",
+  "description": "A set of tools dedicated for onion domains manipulation. ",
   "main": "./src/index.js",
   "scripts": {
     "test": "npx mocha ./src/test"

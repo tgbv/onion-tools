@@ -5,6 +5,12 @@ A set of tools dedicated for onion domains manipulation. Readme file is a pure o
 - Compatible with Node >= 16.
 - Supports only onion V3 domains.
 
+Get it via NPM:
+
+```
+npm i onion-tools
+```
+
 ### 1. Domain generation
 
 You can generate random domains, or deterministically from a predefined seed.
