@@ -1,6 +1,6 @@
 # Tor onion domain tools
 
-A set of tools dedicated for onion domains manipulation. Readme file is a pure overview, each exported method is documented better within its comments.
+A set of tools dedicated to onion domains manipulation. Readme file is a pure overview, each exported method is documented better within its comments.
 
 - Compatible with Node >= 16.
 - Supports only onion V3 domains.
