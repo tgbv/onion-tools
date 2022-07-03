@@ -3,6 +3,7 @@
 A set of tools dedicated to onion domains manipulation. Readme file is a pure overview, each exported method is documented better within its comments.
 
 - Compatible with Node >= 16.
+- Requires ES6.
 - Supports only onion V3 domains.
 
 Get it via NPM:
