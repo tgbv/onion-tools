@@ -1,8 +1,8 @@
 import base32Decode from "base32-decode";
 import base32Encode from "base32-encode";
-import { createHash } from "crypto";
-import { InvalidSyntax } from "./exceptions.js";
-import * as ed25519 from "noble-ed25519";
+import { BinaryLike, createHash } from "crypto";
+import { InvalidSyntax } from "./exceptions";
+import * as ed25519 from "@noble/ed25519";
 
 /**
  * IETF base32 specification used by onion domains.
@@ -20,15 +20,11 @@ export const base32AlphabetVariant = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
 /**
  * V3 domain checksum salt.
- * 
- * @type {Buffer}
  */
 export const v3ChecksumSalt = Buffer.from(".onion checksum", "ascii");
 
 /**
  * V3 domain checksum version.
- * 
- * @type {Buffer}
  */
 export const v3ChecksumVersion = Buffer.from(new Uint8Array([3]));
 
@@ -48,7 +44,7 @@ export const v3ServicePrivKeyHeader = Buffer.from("== ed25519v1-secret: type0 ==
  * @param {Buffer} publicKey
  * @returns {Buffer} Buffer holding the first 2 bytes of the hashed checksum data. 
  */
-function computeV3Checksum(publicKey) {
+function computeV3Checksum(publicKey: Buffer): Buffer {
   const checksumBuff = Buffer.concat([
     v3ChecksumSalt,
     publicKey,
@@ -64,17 +60,17 @@ function computeV3Checksum(publicKey) {
  * @param {string} domain
  * @returns {string}
  */
-function sanitizeDomainForInternalUse(domain) {
+function sanitizeDomainForInternalUse(domain: string): string {
   domain = domain.toUpperCase();
 
   return domain.replace('.ONION', '');
 }
 
 /**
- * @param {Buffer} seed 
+ * @param {BinaryLike} seed 
  * @returns {Buffer}
  */
-function computeExpandedPrivateKeyFromSeed(seed) {
+function computeExpandedPrivateKeyFromSeed(seed: BinaryLike): Buffer {
   const privKeyHashBuff = createHash("sha512").update(seed).digest();
 
   privKeyHashBuff.set([privKeyHashBuff[0] & 248], 0);
@@ -88,7 +84,7 @@ function computeExpandedPrivateKeyFromSeed(seed) {
  * @param {Buffer} key 
  * @returns {Buffer}
  */
-function sanitizePubKeyForHiddenServiceHosting(key) {
+function sanitizePubKeyForHiddenServiceHosting(key: Buffer): Buffer {
   return Buffer.concat([
     v3ServicePubKeyHeader,
     key
@@ -99,7 +95,7 @@ function sanitizePubKeyForHiddenServiceHosting(key) {
  * @param {Buffer} expandedPrivKey 
  * @returns {Buffer}
  */
-function sanitizeExpandedPrivKeyForHiddenServiceHosting(expandedPrivKey) {
+function sanitizeExpandedPrivKeyForHiddenServiceHosting(expandedPrivKey: Buffer): Buffer {
   return Buffer.concat([
     v3ServicePrivKeyHeader,
     expandedPrivKey
@@ -119,24 +115,27 @@ function sanitizeExpandedPrivKeyForHiddenServiceHosting(expandedPrivKey) {
  * 
  * @see isValidV3OnionDomain
  */
-export function isValidV3OnionDomainSyntax(domain) {
+export function isValidV3OnionDomainSyntax(domain: string): boolean {
   domain = domain.toUpperCase();
 
-  return domain.match(new RegExp(`^[${base32AlphabetVariant}]{56}\\.ONION$`));
+  return domain.match(new RegExp(`^[${base32AlphabetVariant}]{56}\\.ONION$`)) !== null;
+}
+
+export interface IV3DomainParts {
+  publicKey: Buffer;
+  checksum: Buffer;
+  version: Buffer;
 }
 
 /**
- * Extract 'bones' from a V3 domain.
+ * Extract the parts of a V3 domain.
  * 
  * @param {string} domain
- * @returns {{
- *  publicKey: Buffer,
- *  checksum: Buffer,
- *  version: Buffer,
- * }}
- * @throws {InvalidSyntax} in case input domain has an invalid syntax.
+ * @returns {IV3DomainParts}
+ * 
+ * @throws InvalidSyntax in case input domain has an invalid syntax.
  */
-export function extractV3Bones(domain) {
+export function extractV3Parts(domain: string): IV3DomainParts {
 
   if (isValidV3OnionDomainSyntax(domain)) {
     domain = sanitizeDomainForInternalUse(domain);
@@ -161,10 +160,10 @@ export function extractV3Bones(domain) {
  * @param {string} domain
  * @returns {boolean} valid or not
  */
-export function isValidV3OnionDomain(domain) {
+export function isValidV3OnionDomain(domain: string): boolean {
 
   if (isValidV3OnionDomainSyntax(domain)) {
-    const { publicKey, checksum, version } = extractV3Bones(domain);
+    const { publicKey, checksum, version } = extractV3Parts(domain);
 
     if (version.equals(v3ChecksumVersion)) {
       return computeV3Checksum(publicKey).equals(checksum);
@@ -172,6 +171,12 @@ export function isValidV3OnionDomain(domain) {
   }
 
   return false;
+}
+
+export interface IV3DomainBones {
+  expandedPrivateKey: Buffer
+  publicKey: Buffer
+  domain: string
 }
 
 /**
@@ -183,20 +188,16 @@ export function isValidV3OnionDomain(domain) {
  * Note that by default the private/public keys pair cannot be directly exported to files
  * for Tor hidden service hosting. To sanitize them for that feature see 'formatForService' parameter.
  * 
- * @param {?any} seed Can contain anything. Will be fed into a sha256 digest.
- * Should be long enough for security reasons. If it's null/undefined, a random seed will be used.
+ * @param {BinaryLike} seed Can contain anything BinaryLike. Will be fed into a sha256 digest.
+ * It should be long enough for security reasons. If it's null/undefined, a random seed will be used.
  * If it's specified, the whole generation process will be deterministic.
  * 
  * @param {boolean} formatForService Set to true if you want to format the public/private keys
  * in a syntax ready to be imported by Tor hidden service hosting.
  * 
- * @returns {Promise<{
- *  expandedPrivateKey: Buffer,
- *  publicKey: Buffer,
- *  domain: string,
- * }>} Domain meta.
+ * @returns {Promise<IV3DomainBones>} Domain meta.
  */
-export async function generateV3OnionDomain(seed, formatForService = false) {
+export async function generateV3OnionDomain(seed?: BinaryLike, formatForService: boolean = false): Promise<IV3DomainBones> {
   const privateSeed = seed ? createHash("sha256").update(seed).digest() : ed25519.utils.randomPrivateKey();
   const publicKey = Buffer.from(await ed25519.getPublicKey(privateSeed));
 
@@ -214,5 +215,5 @@ export async function generateV3OnionDomain(seed, formatForService = false) {
     expandedPrivateKey: formatForService ? sanitizeExpandedPrivKeyForHiddenServiceHosting(expandedPrivateKey) : expandedPrivateKey,
     publicKey: formatForService ? sanitizePubKeyForHiddenServiceHosting(publicKey) : publicKey,
     domain: domainEncoded.toLowerCase() + ".onion"
-  }
+  };
 }

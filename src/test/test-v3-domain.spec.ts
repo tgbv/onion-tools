@@ -1,5 +1,4 @@
-import { isValidV3OnionDomain, isValidV3OnionDomainSyntax } from "../index.js";
-import assert from "assert";
+import { isValidV3OnionDomain, isValidV3OnionDomainSyntax } from "../index";
 
 const valid = "ciadotgov4sjwlzihbbgxnqg3xiyrg7so2r2o3lt5wz5ypk4sxyjstad.onion";
 const invalidChecksum = "zacebookwkhpilnemxj7asaniu7vnjjbiltxjqhye3mhbshg7kx5tfyd.onion";
@@ -15,7 +14,7 @@ const invalidRegexVariants = [
 
 it('should pass on valid domain', () => {
   const result = isValidV3OnionDomain(valid);
-  assert.equal(result, true);
+  expect(result).toBe(true);
 });
 
 it('should pass on invalid domain syntax', () => {
@@ -28,10 +27,10 @@ it('should pass on invalid domain syntax', () => {
     }
   }
 
-  assert.equal(result, false);
+  expect(result).toBe(false);
 });
 
 it('should pass on invalid domain checksum', () => {
   const result = isValidV3OnionDomain(invalidChecksum);
-  assert.equal(result, false);
+  expect(result).toBe(false);
 });
