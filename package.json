@@ -8,6 +8,10 @@
     "test": "npx jest",
     "build": "rm -rf ./src/*.js && npm run test && npx tsc"
   },
+  "engines": {
+    "node": ">=16",
+    "npm": ">=8"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/tgbv/onion-tools"
