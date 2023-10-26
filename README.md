@@ -30,17 +30,14 @@ const domainFromSeedObj = await generateV3OnionDomain('some seed')
  *  domain: string,
  * }
  */
-console.log(any generated domain)
+console.log(randomDomainObj)
 ```
 
-By default the generated public/private keys pair cannot be imported by Tor onion service hosting. If you wish that sanitization pass another boolean parameter to the function. After that you will be able to write the keys to files and import them to onion hosting successfully.
+**By default the generated public/private keys pair cannot be imported by Tor onion service hosting.** If you wish that sanitization pass another boolean parameter to the function. After that you will be able to write the keys to files and import them to onion hosting successfully.
 
 ```js
 // Generate random domain with keys pair sanitized for hosting import.
-const { domain, expandedPrivateKey, publicKey } = await generateV3OnionDomain(
-  null,
-  true,
-)
+const { domain, expandedPrivateKey, publicKey } = await generateV3OnionDomain(undefined, true)
 
 writeFileSync('./hs_ed25519_secret_key', expandedPrivateKey)
 writeFileSync('./hs_ed25519_public_key', publicKey)
@@ -68,7 +65,7 @@ You can extract known components of a domain from it, such as public key, checks
 ```js
 const domain = 'ciadotgov4sjwlzihbbgxnqg3xiyrg7so2r2o3lt5wz5ypk4sxyjstad.onion'
 
-const resultObj = extractV3Bones(domain)
+const resultObj = extractV3Parts(domain)
 
 /**
  * Outputs: {
